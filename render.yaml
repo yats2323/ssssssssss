@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: framecut-license
+    runtime: python
+    plan: starter            # a disk (needed so the list survives restarts) requires a paid plan
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1
+    healthCheckPath: /healthz
+    envVars:
+      - key: ADMIN_TOKEN
+        generateValue: true  # Render creates it; copy it from the Environment tab into the generator
+      - key: LIC_PUB_XML
+        sync: false          # you paste the public key in the Render dashboard (see README.md)
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: license-data
+      mountPath: /var/data
+      sizeGB: 1
